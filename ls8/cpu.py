@@ -7,7 +7,29 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        # Initialize ram to hold 256 bytes of memory
+        byte = [0] * 8
+        self.ram = [byte] * 256 
+
+        # Eight general purpose registers 
+        self.reg = [byte] * 8 
+
+        # Internal Registers
+
+        # Program Counter - address of the currently executing instruction
+        self.pc = 0
+
+        # Instruction register - contains a copy of the currently executing instruction
+        self.ir = None
+
+        # Memory address - holds the memory address we are reading or writing
+        self.mar = None 
+
+        # Memory Data register - Holds the value to write or the value just read
+        self.mdr = None 
+
+        # Flags Register - holds the current flags status
+        self.fl = None
 
     def load(self):
         """Load a program into memory."""
