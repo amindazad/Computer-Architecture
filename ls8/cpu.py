@@ -2,6 +2,10 @@
 
 import sys
 
+"""Instruction Opcodes"""
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
 class CPU:
     """Main CPU class."""
 
@@ -79,7 +83,7 @@ class CPU:
         self.mar = address
         
         self.ram[self.mar] = self.mdr
-        
+
     def trace(self):
         """
         Handy function to print out the CPU state. You might want to call this
