@@ -6,6 +6,7 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
+
 class CPU:
     """Main CPU class."""
 
@@ -75,12 +76,12 @@ class CPU:
 
         return self.mdr
     
-    def ram_write(self, value, address):
+    def ram_write(self, address, value):
         """
         Should accept a value to write and the address to write to
         """
-        self.mdr = value
         self.mar = address
+        self.mdr = value
         
         self.ram[self.mar] = self.mdr
 
@@ -106,4 +107,24 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        running = True 
+
+        while running:
+            # Get the current instruction 
+            instruction = self.ram_read(self.pc)
+
+            # Store a copy of the current instruction in the IR register
+            self.ir = instruction
+
+            # Get the number of operands 
+            num_operands = instruction >> 6
+
+            # Store the bytes at pc+1 and pc+2
+            operand_a = self.ram_read(self.pc+1)
+            operand_b = self.ram_read(self.pc+2)
+
+            if command == HLT:
+                running = False
+            
+            # Point the PC to the next instruction in memory
+            self.pc += num_operands + 1 
