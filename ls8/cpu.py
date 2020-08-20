@@ -28,7 +28,7 @@ class CPU:
         self.ir = None
 
         # Memory address - holds the memory address we are reading or writing
-        self.mar = None 
+        self.mar = 0
 
         # Memory Data register - Holds the value to write or the value just read
         self.mdr = None 
@@ -39,23 +39,36 @@ class CPU:
     def load(self):
         """Load a program into memory."""
 
-        address = 0
+        # Print an error if uses did not provide a program 
+        if len(sys.argv) < 2:
+            print("No file to read")
+            print("Usage filename file_to_open")
+            sys.exit()
 
-        # For now, we've just hardcoded a program:
+        try:
+            #Ope the provided file as the 2nd arg
+            with open(sys.argv[1]) as file:
+                for line in file:
+                    # Split each line into an array with "#" as the delimiter
+                    comment_split = line.split("#")
+                    # The first value in each array is a possible instruction
+                    possible_instruction = comment_split[0]
+                    #If the value in an empty string, this line is a comment
+                    if possible_instruction == "":
+                        continue
+                    # If the value starts with 1 or 0 it's an instruction
+                    if possible_instruction[0] == '1' or possible_instruction[0] == '2':
+                        # Get the first 8 values
+                        instruction = possible_instruction[:8]
+                        # Convert the instruction into an integer and store it in memory
+                        self.ram[self.mar] = int(instruction, 2)
+                        # Increment the memory address register value
+                        self.mar += 1
+        except FileNotFoundError:
+            print(f'{sys.argv[0]}: {sys.argv[1]} not found')
+            sys.exit()
+            
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
-
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
 
 
     def alu(self, op, reg_a, reg_b):
@@ -123,8 +136,18 @@ class CPU:
             operand_a = self.ram_read(self.pc+1)
             operand_b = self.ram_read(self.pc+2)
 
-            if command == HLT:
+            # Halt the CPU
+            if self.ir == HLT:
                 running = False
+            
+            # Set the value of register to an integer
+            if self.ir == LDI:
+                self.ram_write(operand_a, operand_b)
+
+            # Print the decimal integer value store in the given register
+            if self. ir == PRN:
+                number = self.ram_read(operand_a)
+                print(number)
             
             # Point the PC to the next instruction in memory
             self.pc += num_operands + 1 
