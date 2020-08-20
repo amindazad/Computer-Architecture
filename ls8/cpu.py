@@ -40,6 +40,12 @@ class CPU:
         # Flags Register - holds the current flags status
         self.fl = None
 
+        # Setup branch table
+        self.branchtable = {}
+        self.branchtable[HLT] = self.handle_hlt
+        self.branchtable[LDI] = self.handle_ldi
+        self.branchtable[PRN] = self.handle_prn
+
     def load(self):
         """Load a program into memory."""
 
@@ -126,6 +132,18 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    
+    def handle_hlt(self):
+        sys.exit()
+    
+    def handle_ldi(self):
+        register = self.ram_read(self.pc + 1)
+        value = self.ram_read(self.pc + 2)
+        self.reg[register] = value
+    
+    def handle_prn(self):
+        register = self.ram_read(self.pc + 1)
+        print(self.reg[register])
 
     def run(self):
         """Run the CPU."""
@@ -150,19 +168,9 @@ class CPU:
 
             if is_alu_operation:
                 self.alu(self.ir, operand_a, operand_b)
+            else:
+                self.branchtable[self.ir]()
 
-            # Halt the CPU
-            if self.ir == HLT:
-                running = False
-            
-            # Set the value of register to an integer
-            if self.ir == LDI:
-                self.reg[operand_a = operand_b]
-
-            # Print the decimal integer value store in the given register
-            if self. ir == PRN:
-                number = self.reg[operand_a]
-                print(number)
             
             # Point the PC to the next instruction in memory
             self.pc += num_operands + 1 
