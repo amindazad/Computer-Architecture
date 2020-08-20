@@ -49,14 +49,14 @@ class CPU:
             #Ope the provided file as the 2nd arg
             with open(sys.argv[1]) as file:
                 for line in file:
-                    # Split each line into an array with "#" as the delimiter
+                    # Split the line into an array with "#" as the delimiter
                     comment_split = line.split("#")
-                    # The first value in each array is a possible instruction
+                    # The first sting is a possible instruction
                     possible_instruction = comment_split[0]
-                    #If the value in an empty string, this line is a comment
+                    #If it's an empty string, this line is a comment
                     if possible_instruction == "":
                         continue
-                    # If the value starts with 1 or 0 it's an instruction
+                    # If the string starts with 1 or 0 it's an instruction
                     if possible_instruction[0] == '1' or possible_instruction[0] == '2':
                         # Get the first 8 values
                         instruction = possible_instruction[:8]
@@ -67,7 +67,7 @@ class CPU:
         except FileNotFoundError:
             print(f'{sys.argv[0]}: {sys.argv[1]} not found')
             sys.exit()
-            
+
 
 
 
