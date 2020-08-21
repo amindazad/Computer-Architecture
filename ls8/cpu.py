@@ -53,7 +53,14 @@ class CPU:
         self.mdr = None 
 
         # Flags Register - holds the current flags status
-        self.fl = None
+        
+        # If a particular bit is set, that flag is "true"
+
+        # FL bits: 00000LGE
+        # L Less-than: during a CMP, set to 1 if registerA is less than registerB, zero otherwise.
+        # G Greater-than: during a CMP, set to 1 if registerA is greater than registerB, zero otherwise.
+        # E Equal: during a CMP, set to 1 if registerA is equal to registerB, zero otherwise.
+        self.fl = 0b00000000
 
         # Loop in cpu_run() will run while running is True
         self.running = True
@@ -118,6 +125,21 @@ class CPU:
             self.reg[reg_a] *= self.reg[reg_b]
         elif op == DIV:
             self.reg[reg_a] /= self.reg[reg_b]
+        elif op == CMP:
+            # reset the flags 
+            self.fl = 0b00000000
+
+            # If reg_a and reg_b are equal set the E flag to 1 or 0 otherwise
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.fl = self.fl | 0b00000001
+
+            # if reg_a is greater than reg_b set the G flag to 1 or 0 otherwise 
+            if self.reg[reg_a] > self.reg[reg_b]:
+                self.fl = self.fl | 0b00000010
+            
+            # If reg_a is less than reg_b set the L flag to 1 or 0 otherwise
+            if self.reg[reg_a] < self.reg[reg_b]:
+                self.fl = self.fl | 0b00000100
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -183,9 +205,6 @@ class CPU:
         # Set the PC to that address
         self.pc = address
     
-    def handle_cmp(self):
-        pass
-    
     def handle_hlt(self):
         self.running = False
         sys.exit()
@@ -221,7 +240,7 @@ class CPU:
     def handle_prn(self):
         register = self.ram_read(self.pc + 1)
         print(self.reg[register])
-        
+
     def handle_push(self):
         # Decrement the Stack Pointer
         self.reg[7] -= 1 
