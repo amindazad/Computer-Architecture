@@ -17,11 +17,14 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         # Initialize ram to hold 256 bytes of memory
-        byte = [0] * 8
-        self.ram = [byte] * 256 
+        self.ram = [0] * 256
 
         # Eight general purpose registers 
-        self.reg = [byte] * 8 
+        self.reg = [0] * 8 
+
+        # self.reg[5] is reserved as the Interrupt Mark (IM)
+        # self.reg[6] is reserved as the Interrupt Status (IS)
+        # self.reg[7] is reserved as the Stack Pointer (SP)
 
         # Internal Registers
 
@@ -99,7 +102,9 @@ class CPU:
         """
         Should accept the address to read and return the value stored
         """
+        # Save address to MAR
         self.mar = address
+        # Save address to MDR
         self.mdr = self.ram[self.mar]
 
         return self.mdr
@@ -108,9 +113,11 @@ class CPU:
         """
         Should accept a value to write and the address to write to
         """
+        # Save address to MAR
         self.mar = address
+        # Save Value to MDR
         self.mdr = value
-        
+        # Save the value in MDR to the memory address stored in MAR
         self.ram[self.mar] = self.mdr
 
     def trace(self):
